@@ -1,0 +1,15 @@
+{
+  "name": "refresh-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Logqwerty/refresh-bot.git",
+  "author": "Logqwerty <inm2790@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "moment": "^2.29.1",
+    "selenium-webdriver": "^4.1.0"
+  }
+}
