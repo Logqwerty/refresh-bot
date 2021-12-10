@@ -8,6 +8,7 @@ const sleep = (seconds) =>
 
 (async function example() {
   const driver = await new Builder().forBrowser("chrome").build();
+  await driver.manage().window().maximize();
 
   try {
     await driver.get("http://www.avon.com");
@@ -29,12 +30,16 @@ const sleep = (seconds) =>
         const screenShot = await htmlEl.takeScreenshot(true);
         const date = moment().format("YYYY-MM-DD-HH-mm-ss");
         const filename = path.resolve(__dirname, `screenshot-${date}`);
+        const cookies = await driver.manage().getCookies();
 
         fs.writeFile(
           `${filename}.png`,
           screenShot.replace(/^data:image\/png;base64,/, ""),
           "base64",
           (err) => console.log(err)
+        );
+        fs.writeFile(`${filename}.json`, JSON.stringify(cookies), (err) =>
+          console.log(err)
         );
       } else {
         console.log("Not Found");
