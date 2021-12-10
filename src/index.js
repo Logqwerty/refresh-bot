@@ -3,10 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 
-const sleep = (seconds) =>
-  new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+const sleep = seconds =>
+  new Promise(resolve => setTimeout(resolve, seconds * 1000));
 
-(async function example() {
+(async function refreshBot() {
   const driver = await new Builder().forBrowser("chrome").build();
   await driver.manage().window().maximize();
 
@@ -21,8 +21,9 @@ const sleep = (seconds) =>
       const element = await driver
         .findElement(By.css("button[class^='Headerstyles__UserNameArea']"))
         .catch(() => console.log("throw header button"));
+      const cookies = await driver.manage().getCookies();
 
-      if (element) {
+      if (element || cookies?.refreshToken) {
         console.log("Take a screenshot...");
         const htmlEl = await driver
           .findElement(By.tagName("html"))
@@ -30,15 +31,14 @@ const sleep = (seconds) =>
         const screenShot = await htmlEl.takeScreenshot(true);
         const date = moment().format("YYYY-MM-DD-HH-mm-ss");
         const filename = path.resolve(__dirname, `screenshot-${date}`);
-        const cookies = await driver.manage().getCookies();
 
         fs.writeFile(
           `${filename}.png`,
           screenShot.replace(/^data:image\/png;base64,/, ""),
           "base64",
-          (err) => console.log(err)
+          err => console.log(err)
         );
-        fs.writeFile(`${filename}.json`, JSON.stringify(cookies), (err) =>
+        fs.writeFile(`${filename}.json`, JSON.stringify(cookies), err =>
           console.log(err)
         );
       } else {
