@@ -1,5 +1,5 @@
 const { Builder, By } = require("selenium-webdriver");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const moment = require("moment");
 
@@ -30,23 +30,34 @@ const sleep = seconds =>
           .catch(() => console.log("throw html"));
         const screenShot = await htmlEl.takeScreenshot(true);
         const date = moment().format("YYYY-MM-DD-HH-mm-ss");
-        const filename = path.resolve(__dirname, `screenshot-${date}`);
+        const screenShotName = path.resolve(
+          __dirname,
+          "../logs/images",
+          `screenshot-${date}`
+        );
+        const jsonName = path.resolve(
+          __dirname,
+          "../logs/cookies",
+          `cookies-${date}`
+        );
 
-        fs.writeFile(
-          `${filename}.png`,
+        await fs.writeFile(
+          `${screenShotName}.png`,
           screenShot.replace(/^data:image\/png;base64,/, ""),
           "base64",
           err => console.log(err)
         );
-        fs.writeFile(`${filename}.json`, JSON.stringify(cookies), err =>
+        await fs.writeFile(`${jsonName}.json`, JSON.stringify(cookies), err =>
           console.log(err)
         );
+        break;
       } else {
         console.log("Not Found");
       }
 
-      console.log("refresh!");
+      console.log("Refresh!");
     }
+    console.log("Done!");
   } catch (e) {
     console.log(e);
   } finally {
